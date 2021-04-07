@@ -3,7 +3,7 @@ class BlogsController < ApplicationController
 
   before_action :set_user, only: %i[create new edit update destroy]
   before_action :set_blog, only: %i[show edit update destroy]
-  before_action :owned_blog, only: %i[edit update destroy]
+  before_action :owns_blog?, only: %i[edit update destroy]
 
   def index
     @blogs = Blog.all
@@ -51,7 +51,7 @@ class BlogsController < ApplicationController
     @user = User.find(@user_id)
   end
 
-  def owned_blog
+  def owns_blog?
     return if @user_id == @blog.user_id
 
     head :unauthorized
