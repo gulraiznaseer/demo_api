@@ -1,5 +1,9 @@
 class BlogsController < ApplicationController
+  before_action :process_token, except: :index
+
+  before_action :set_user, only: %i[create new edit update destroy]
   before_action :set_blog, only: %i[show edit update destroy]
+  before_action :owned_blog, only: %i[edit update destroy]
 
   def index
     @blogs = Blog.all
@@ -10,11 +14,11 @@ class BlogsController < ApplicationController
   end
 
   def new
-    @blog = Blog.new
+    @blog = @user.blogs.new
   end
 
   def create
-    @blog = Blog.new(blog_params)
+    @blog = @user.blogs.new(blog_params)
     @blog.save
 
     redirect_to blog_path(@blog)
@@ -41,5 +45,15 @@ class BlogsController < ApplicationController
 
   def blog_params
     params.require(:blog).permit(:title, :body)
+  end
+
+  def set_user
+    @user = User.find(@user_id)
+  end
+
+  def owned_blog
+    return if @user_id == @blog.user_id
+
+    head :unauthorized
   end
 end

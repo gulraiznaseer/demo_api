@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   }
 
   scope :api do
-    resources :blogs
+    resources :blogs do
+      resources :comments
+      resources :comments, only: :new
+    end
     resources :blogs, only: :new
   end
 end
